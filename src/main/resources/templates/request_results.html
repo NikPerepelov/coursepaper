@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Результат запроса</title>
+</head>
+<body>
+    <h2>Результаты запроса</h2>
+        <table>
+            <tr>
+                <th>Данные</th>
+            </tr>
+            <tr th:each="string : ${results}">
+                <td th:text="${string}"></td>
+            </tr>
+        </table>
+    <a href="/">На главную</a>
+</body>
+</html>
