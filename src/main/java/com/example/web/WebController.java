@@ -1,17 +1,14 @@
 package com.example.web;
 
 import com.example.db.DatabaseService;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.springframework.boot.Banner;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,20 +49,28 @@ public class WebController {
         }
 
         DatabaseService databaseService = DatabaseService.getDatabaseService();
-        databaseService.exec(result, file_name.substring(0, file_name.length() - 4));
+        databaseService.insertCSV(result, file_name.substring(0, file_name.length() - 4));
 
         model.addAttribute("message", "Загрузка успешна!");
         return "csv_form";
     }
 
     @GetMapping("/request")
-    public String requestResults(Model model) {
-        List<String> results = new ArrayList<>();
+    public String requestResults() {
+        return "request_results";
+    }
 
-        results.add("Один");
-        results.add("Два");
+    @PostMapping("/request")
+    public String returnResults(@ModelAttribute("string_to_find") String string_to_find, Model model) {
+        System.out.println(string_to_find);
 
-        model.addAttribute("results", results);
+        DatabaseService databaseService = DatabaseService.getDatabaseService();
+        var result = databaseService.findTransactions(string_to_find);
+        model.addAttribute("result", result);
+        if (!result.isEmpty()){
+            model.addAttribute("flag", true);
+        }
+
         return "request_results";
     }
 }

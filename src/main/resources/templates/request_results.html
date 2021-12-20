@@ -5,15 +5,31 @@
     <title>Результат запроса</title>
 </head>
 <body>
-    <h2>Результаты запроса</h2>
+<form method="post">
+    <label>
+        Строка для регистронезависимого поиска
+        <input type="text" name="string_to_find">
+    </label>
+    <input type="submit">
+</form>
+
+<a href="/">На главную</a>
+    <div th:if="${flag}">
         <table>
             <tr>
-                <th>Данные</th>
+                <th>Тип транзакции</th>
+                <th>Описание транзакции</th>
+                <th>ID пользователя</th>
+                <th>Время транзакции</th>
+                <th>Код MCC</th>
+                <th>Сумма</th>
+                <th>ID терминала</th>
             </tr>
-            <tr th:each="string : ${results}">
-                <td th:text="${string}"></td>
+            <tr th:each="transaction : ${result}">
+                <td th:each="text : ${transaction}" th:text="${text}"></td>
             </tr>
         </table>
-    <a href="/">На главную</a>
+    </div>
+
 </body>
 </html>

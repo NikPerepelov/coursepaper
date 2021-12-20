@@ -4,6 +4,7 @@ package com.example.db;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
@@ -22,7 +23,7 @@ public class DatabaseService {
         return INSTANCE;
     }
 
-    public void exec(List<String[]> data, String tableName) throws SQLException {
+    public void insertCSV(List<String[]> data, String tableName) throws SQLException {
         DBProperties properties = DBProperties.getProperties();
         try (Connection connection = DriverManager.getConnection(
                 properties.getUrl(),
@@ -36,49 +37,75 @@ public class DatabaseService {
         }
     }
 
-    private void getStudents(@NotNull Connection connection) throws SQLException {
-        String query = "SELECT * FROM student ORDER BY id";
+    public List<List<String>> findTransactions(String string_to_find) {
+        DBProperties properties = DBProperties.getProperties();
+        try (Connection connection = DriverManager.getConnection(
+                properties.getUrl(),
+                properties.getUser(),
+                properties.getPassword()
+        )) {
+            return findTransactionQuery(connection, string_to_find);
+        } catch (SQLException e) {
+            LOGGER.info(e.getMessage());
+        }
+        return null;
+    }
+
+    private List<List<String>> findTransactionQuery(@NotNull Connection connection, String string_to_find) throws SQLException {
+        //TODO: найти другой способ запроса, тут очевидная уязвимость
+        String query = "SELECT * FROM tr_types AS trt INNER JOIN transactions_cut AS trc ON trc.tr_type = trt.tr_type WHERE LOWER(tr_description) LIKE LOWER('%" + string_to_find + "%');";
+
+        List<List<String>> transactions = new ArrayList<>();
+
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             try (ResultSet result = statement.executeQuery()) {
                 while (result.next()) {
-                    LOGGER.info("id: { " + result.getInt("id") + " }, name: { "
-                            + result.getString("name") +
-                            " }, surname: { " + result.getString("surname") + " }, group_id: { " +
-                            result.getString("group_id") + " }"
-                    );
+                    List<String> current_transaction = new ArrayList<>();
+                    current_transaction.add(result.getString(1));
+                    current_transaction.add(result.getString(2));
+                    current_transaction.add(result.getString(3));
+                    current_transaction.add(result.getString(4));
+                    current_transaction.add(result.getString(5));
+                    //current_transaction.add(result.getString(6));
+                    current_transaction.add(result.getString(7));
+                    current_transaction.add(result.getString(8));
+                    transactions.add(current_transaction);
                 }
             }
         }
+
+        return transactions;
     }
 
+
     private void addRecording(@NotNull Connection connection, List<String[]> data, String tableName) throws SQLException {
-        String header = "";
+        StringBuilder header = new StringBuilder();
 
         for (int i = 0; i < data.get(0).length; i++) {
-            header += data.get(0)[i];
+            header.append(data.get(0)[i]);
             if (i != data.get(0).length - 1) {
-                header += ", ";
+                header.append(", ");
             }
         }
         switch (tableName) {
             case "transactions_cut":
                 for (int i = 1; i < data.size(); i++) {
-                    addTransaction(connection, data.get(i), tableName, header);
+                    addTransaction(connection, data.get(i), tableName, header.toString());
                 }
                 break;
             case "tr_types":
                 for (int i = 1; i < data.size(); i++) {
-                    addTypes(connection, data.get(i), tableName, header);
+                    addTypes(connection, data.get(i), tableName, header.toString());
                 }
                 break;
             case "tr_mcc_codes":
                 for (int i = 1; i < data.size(); i++) {
-                    mcc_codes(connection, data.get(i), tableName, header);
+                    mcc_codes(connection, data.get(i), tableName, header.toString());
                 }
                 break;
             case "gender_train_cut":
                 for (int i = 1; i < data.size(); i++) {
-                    addGender(connection, data.get(i), tableName, header);
+                    addGender(connection, data.get(i), tableName, header.toString());
                 }
                 break;
             default:
@@ -167,19 +194,19 @@ public class DatabaseService {
     }
 
     private String createInsertQuery(String tableName, String[] recording, String header) {
-        String query = "INSERT INTO " + tableName + "(" + header + ") VALUES (";
+        StringBuilder query = new StringBuilder("INSERT INTO " + tableName + "(" + header + ") VALUES (");
 
         for (int i = 0; i < recording.length; i++) {
-            query += "?";
+            query.append("?");
 
             if (i != recording.length - 1) {
-                query += ", ";
+                query.append(", ");
             }
         }
 
-        query += ")";
+        query.append(")");
 
-        return query;
+        return query.toString();
     }
 
     private void CreateTables(@NotNull Connection connection) throws SQLException {
