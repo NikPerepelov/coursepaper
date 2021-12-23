@@ -1,8 +1,6 @@
 package com.example.web;
 
-import com.example.Entities.transactions;
 import com.example.db.DatabaseService;
-import org.springframework.boot.Banner;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;

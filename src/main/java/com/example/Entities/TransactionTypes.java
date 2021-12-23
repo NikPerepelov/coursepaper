@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "tr_types")
-public class tr_types
+public class TransactionTypes
 {
     @Id
     private long tr_type;
@@ -12,10 +12,10 @@ public class tr_types
     @Column(name = "tr_description")
     private String tr_description;
 
-    public tr_types() {
+    public TransactionTypes() {
     }
 
-    public tr_types(long tr_type, String tr_description) {
+    public TransactionTypes(long tr_type, String tr_description) {
         this.tr_type = tr_type;
         this.tr_description = tr_description;
     }

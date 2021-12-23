@@ -5,7 +5,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "gender_train")
-public class gender_train
+public class GenderTrain
 {
     @Id
     private long customer_id;
@@ -14,14 +14,14 @@ public class gender_train
     private byte gender;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "gender_train", orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<transactions> transactionsList;
+    private List<Transactions> transactionsList;
 
-    public gender_train()
+    public GenderTrain()
     {
 
     }
 
-    public gender_train(long customer_id, byte gender)
+    public GenderTrain(long customer_id, byte gender)
     {
         this.customer_id = customer_id;
         this.gender = gender;

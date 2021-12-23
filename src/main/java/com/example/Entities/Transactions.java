@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "transactions_cut")
-public class transactions
+public class Transactions
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -12,7 +12,7 @@ public class transactions
 
     @ManyToOne(fetch = FetchType.LAZY)
     @Column (name = "customer_id")
-    private gender_train customer_id;
+    private GenderTrain customer_id;
 
     @Column (name = "tr_datetime")
     private String tr_datetime;
@@ -32,7 +32,7 @@ public class transactions
     @JoinColumn(name = "tr_mcc_codes")
     private long tr_mcc_codes;
 
-    public transactions(long trans_id, long customer_id, String tr_datetime, long mcc_code, long tr_type, double amount, String term_id) {
+    public Transactions(long trans_id, long customer_id, String tr_datetime, long mcc_code, long tr_type, double amount, String term_id) {
         this.trans_id = trans_id;
         this.tr_datetime = tr_datetime;
         this.mcc_code = mcc_code;
@@ -41,7 +41,7 @@ public class transactions
         this.term_id = term_id;
     }
 
-    public transactions() {
+    public Transactions() {
 
     }
 
@@ -61,7 +61,7 @@ public class transactions
         return trans_id;
     }
 
-    public gender_train getCustomer_id() {
+    public GenderTrain getCustomer_id() {
         return customer_id;
     }
 
