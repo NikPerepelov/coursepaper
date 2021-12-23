@@ -1,6 +1,7 @@
 package com.example.Entities;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "gender_train")
@@ -11,6 +12,9 @@ public class gender_train
 
     @Column(name = "gender")
     private byte gender;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "gender_train", orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<transactions> transactionsList;
 
     public gender_train()
     {

@@ -36,7 +36,6 @@ public class WebController {
 
         try (InputStream inputStream = file.getInputStream();)
         {
-
             s = new Scanner(inputStream).useDelimiter("\n");
             file_name = file.getOriginalFilename();
             if (Objects.equals(file_name, "tr_mcc_codes.csv")
@@ -99,7 +98,9 @@ public class WebController {
 
         DatabaseService databaseService = DatabaseService.getDatabaseService();
         var result = databaseService.findTransactions(string_to_find);
+
         model.addAttribute("result", result);
+
         if (!result.isEmpty()){
             model.addAttribute("flag", true);
         }

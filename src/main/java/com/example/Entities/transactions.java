@@ -3,15 +3,16 @@ package com.example.Entities;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "users")
+@Table(name = "transactions_cut")
 public class transactions
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long trans_id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
     @Column (name = "customer_id")
-    private long customer_id;
+    private gender_train customer_id;
 
     @Column (name = "tr_datetime")
     private String tr_datetime;
@@ -28,11 +29,11 @@ public class transactions
     @Column (name = "term_id")
     private String term_id;
 
-
+    @JoinColumn(name = "tr_mcc_codes")
+    private long tr_mcc_codes;
 
     public transactions(long trans_id, long customer_id, String tr_datetime, long mcc_code, long tr_type, double amount, String term_id) {
         this.trans_id = trans_id;
-        this.customer_id = customer_id;
         this.tr_datetime = tr_datetime;
         this.mcc_code = mcc_code;
         this.tr_type = tr_type;
@@ -43,7 +44,6 @@ public class transactions
     public transactions() {
 
     }
-
 
     @Override
     public String toString() {
@@ -57,17 +57,11 @@ public class transactions
                 '}';
     }
 
-    public void setTrans_id(long customer_id) {
-        this.trans_id = customer_id;
-    }
-    public Long getTrans_id() {
+    public long getTrans_id() {
         return trans_id;
     }
 
-    public void setCustomer_id(long customer_id) {
-        this.customer_id = customer_id;
-    }
-    public Long getCustomer_id() {
+    public gender_train getCustomer_id() {
         return customer_id;
     }
 
@@ -104,5 +98,12 @@ public class transactions
     }
     public String getTerm_id() {
         return term_id;
+    }
+
+    public long getTr_mcc_codes() {
+        return tr_mcc_codes;
+    }
+    public void setTr_mcc_codes() {
+        this.tr_mcc_codes = tr_mcc_codes;
     }
 }
