@@ -1,5 +1,6 @@
 package com.example.web;
 
+import com.example.Entities.transactions;
 import com.example.db.DatabaseService;
 import org.springframework.boot.Banner;
 import org.springframework.stereotype.Controller;
@@ -14,10 +15,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 @Controller
 public class WebController {
 
+    private static final Logger LOGGER = Logger.getLogger(WebController.class.getName());
     @GetMapping("/csv_upload")
     public String csvUpload() {
 
@@ -25,33 +28,63 @@ public class WebController {
     }
 
     @PostMapping("/csv_upload")
-    public String csvUploadHandle(Model model, @RequestParam("file") MultipartFile file) throws IOException, SQLException {
+    public String csvUploadHandle(Model model, @RequestParam("file") MultipartFile file){
 
-        InputStream inputStream = file.getInputStream();
-        Scanner s = new Scanner(inputStream).useDelimiter("\n");
+        Scanner s;
         List<String[]> result = new ArrayList<>();
-        String file_name = file.getOriginalFilename();
+        String file_name = "";
 
+        try (InputStream inputStream = file.getInputStream();)
+        {
+
+            s = new Scanner(inputStream).useDelimiter("\n");
+            file_name = file.getOriginalFilename();
+            if (Objects.equals(file_name, "tr_mcc_codes.csv")
+                    || Objects.equals(file_name, "tr_types.csv")) {
+                while (s.hasNext()) {
+                    String[] curr_string = s.next().split(";", -1);
+                    result.add(curr_string);
+                }
+            } else {
+                while (s.hasNext()) {
+                    String[] curr_string = s.next().split(",", -1);
+                    result.add(curr_string);
+                }
+            }
+        }
+        catch (IOException ex)
+        {
+            LOGGER.info(ex.getMessage());
+        }
 
         // TODO: валидация файла
 
-        if (Objects.equals(file_name, "tr_mcc_codes.csv")
-                || Objects.equals(file_name, "tr_types.csv")) {
-            while (s.hasNext()) {
-                String[] curr_string = s.next().split(";", -1);
-                result.add(curr_string);
+        try{
+            DatabaseService databaseService = DatabaseService.getDatabaseService();
+            if (file_name.contains(".csv"))
+            {
+                databaseService.insertCSV(result, file_name.substring(0, file_name.length() - 4));
+                model.addAttribute("message", "Загрузка успешна!");
+                model.addAttribute("color", "color:DarkGreen");
             }
-        } else {
-            while (s.hasNext()) {
-                String[] curr_string = s.next().split(",", -1);
-                result.add(curr_string);
+            else if (file_name.length() < 1)
+            {
+                model.addAttribute("message", "Вы не выбрали файл");
+                model.addAttribute("color", "color:Crimson");
+                LOGGER.info("Файл не был выбран");
+            }
+            else
+            {
+                model.addAttribute("message", "Вы не выбрали файл не подходящего разрешения. Пожалуйста, выберете .csv файл");
+                model.addAttribute("color", "color:Crimson");
+                LOGGER.info("Был выбран файл не подходящего разрешения");
             }
         }
+        catch (SQLException ex)
+        {
+            LOGGER.info(ex.getMessage());
+        }
 
-        DatabaseService databaseService = DatabaseService.getDatabaseService();
-        databaseService.insertCSV(result, file_name.substring(0, file_name.length() - 4));
-
-        model.addAttribute("message", "Загрузка успешна!");
         return "csv_form";
     }
 

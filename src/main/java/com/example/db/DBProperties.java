@@ -3,9 +3,9 @@ package com.example.db;
 import java.util.Objects;
 
 public class DBProperties {
-    private static final String URL1 = "jdbc:postgresql://localhost:5432/bank";
-    private static final String USER = "coursepaper";
-    private static final String PASSWORD = "enrf32dog";
+    private static final String URL1 = "jdbc:postgresql://localhost:5432/database";
+    private static final String USER = "postgres";
+    private static final String PASSWORD = "admin";
 
     private static DBProperties INSTANCE;
 
